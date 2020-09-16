@@ -17,6 +17,7 @@ router.post(
     check('firstName', 'First Name is required').not().isEmpty(),
     check('lastName', 'Last Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
+    check('phoneNumber', 'Please enter a valid phone number').isMobilePhone(),
     check(
       'password',
       'Please enter a password with 6 or more characters'
@@ -45,6 +46,7 @@ router.post(
         firstName,
         lastName,
         email,
+        phoneNumber,
         password,
       });
 
