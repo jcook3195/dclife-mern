@@ -10,8 +10,11 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     });
+
+    console.log('MongoDB connected...');
   } catch (err) {
-    // exit with failure
+    console.error(err.message);
+    // exit process with failure
     process.exit(1);
   }
 };
