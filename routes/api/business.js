@@ -130,7 +130,7 @@ router.post(
     try {
       // using upsert to create a new if none is found
       let business = await Business.findOneAndUpdate(
-        { user: req.user.id },
+        { user: req.user.id, businessName: businessFields.businessName },
         { $set: businessFields },
         { new: true, upsert: true }
       );
@@ -185,7 +185,7 @@ router.post(
 
 // @route   GET api/business/category/all
 // @desc    Get all categories
-// @access  Public
+// @access  Private
 router.get('/category/all', auth, async (req, res) => {
   try {
     const categories = await BusinessCategory.find().sort({
@@ -241,27 +241,132 @@ router.get('/', async (req, res) => {
 
 // @route   GET api/business/category/filter/:cat_id
 // @desc    Get all businesses in a particular category
-// @access  Public
+// @access  Private
+router.get('/category/filter/:cat_id', auth, async (req, res) => {
+  try {
+    const businesses = await Business.find({
+      businessCategory: req.params.cat_id,
+    }).sort({
+      category: 'ascending',
+    });
+
+    res.json(businesses);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
 
 // @route   GET api/business/user/:user_id
 // @desc    Get business by user id
-// @access  Public
-
-// @route   DELETE api/business
-// @desc    Delete business & user
 // @access  Private
+router.get('/user/:user_id', auth, async (req, res) => {
+  try {
+    const businesses = await Business.find({
+      user: req.params.user_id,
+    }).populate('user', ['name']);
+
+    if (businesses.length === 0) {
+      return res.status(400).json({ msg: 'This user has no businesses' });
+    }
+
+    res.json(businesses);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   DELETE api/business/:id
-// @desc    Delete single business by id
+// @desc    Delete business
 // @access  Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const business = await Business.findById(req.params.id);
+
+    // if business does not exist
+    if (!business) {
+      return res.status(404).json({ msg: 'Business not found' });
+    }
+
+    // block delete if user does not own post or allow if siteadmin
+    if (business.user.toString() !== req.user.id) {
+      // @@ TO DO - allow deletion if siteadmin
+
+      return res
+        .status(401)
+        .json({ msg: 'User is not authorized to delete this post' });
+    }
+
+    await business.remove();
+
+    res.json({ msg: 'Business removed' });
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Business not found' });
+    }
+    res.status(500).send('Server error');
+  }
+});
 
 // @route   PUT api/business/favorite/:id
 // @desc    Favorite a business
 // @access  Private
+router.put('/favorite/:id', auth, async (req, res) => {
+  try {
+    const business = await Business.findById(req.params.id);
+
+    // check if business has already been favorited by this user
+    if (
+      business.favorites.filter(
+        (favorite) => favorite.user.toString() === req.user.id
+      ).length > 0
+    ) {
+      return res.status(400).json({ msg: 'Business already favorited' });
+    }
+
+    business.favorites.unshift({ user: req.user.id });
+
+    await business.save();
+
+    res.json(business.favorites);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   PUT api/business/unfavorite/:id
 // @desc    Unfavorite a business
 // @access  Private
+router.put('/unfavorite/:id', auth, async (req, res) => {
+  try {
+    const business = await Business.findById(req.params.id);
+
+    // check if business has been favorited by user
+    if (
+      business.favorites.filter(
+        (favorite) => favorite.user.toString() === req.user.id
+      ).length === 0
+    ) {
+      return res.status(400).json({ msg: 'Business is not favorited by user' });
+    }
+
+    // get remove index
+    const removeIndex = business.favorites
+      .map((favorite) => favorite.user.toString())
+      .indexOf(req.user.id);
+
+    business.favorites.splice(removeIndex, 1);
+
+    await business.save();
+
+    res.json(business.favorites);
+  } catch (err) {
+    console.error(err.messag);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   POST api/business/review/:id
 // @desc    Review a business
