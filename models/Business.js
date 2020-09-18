@@ -64,7 +64,7 @@ const BusinessSchema = new Schema({
     {
       user: {
         type: Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'user',
       },
     },
   ],
@@ -72,10 +72,11 @@ const BusinessSchema = new Schema({
     {
       user: {
         type: Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'user',
       },
       review: {
         type: Schema.Types.ObjectId,
+        ref: 'review',
       },
     },
   ],

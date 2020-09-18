@@ -13,7 +13,6 @@ app.use(express.json({ extended: false }));
 // define routes
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/users', require('./routes/api/users'));
-// app.use('/api/profile', require('./routes/api/profile'));
 app.use('/api/business', require('./routes/api/business'));
 // events 2.0
 // jobs 2.0
