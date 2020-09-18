@@ -154,16 +154,26 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // extrap the cat name
-    const { newCatName } = req.body;
-
     try {
+      const user = await User.findById(req.user.id);
+
+      // only allow siteadmins to create categories
+      const isSiteAdmin = user.siteAdmin;
+
+      // check if siteadmin
+      if (!isSiteAdmin) {
+        return res.status(401).json({ msg: 'Only Admins can add categories' });
+      }
+
       const newCategory = new BusinessCategory({
         category: req.body.category,
       });
 
+      const filter = newCategory.category;
+
       // block dupe categories
-      let existingCat = await BusinessCategory.findOne({ newCatName });
+      let existingCat = await BusinessCategory.findOne({ category: filter });
+
       if (existingCat) {
         return res
           .status(400)
