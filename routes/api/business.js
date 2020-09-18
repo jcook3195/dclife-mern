@@ -180,8 +180,6 @@ router.post(
           .json({ errors: [{ msg: 'Category already exists' }] });
       }
 
-      // @@ TO DO - Only allow category creation if the account is siteadmin
-
       const category = await newCategory.save(0);
 
       res.json(category);
@@ -214,13 +212,20 @@ router.get('/category/all', auth, async (req, res) => {
 router.delete('/category/:id', auth, async (req, res) => {
   try {
     const category = await BusinessCategory.findById(req.params.id);
+    const user = await User.findById(req.user.id);
 
     // if category does not exist
     if (!category) {
       return res.status(404).json({ msg: 'Category no found' });
     }
 
-    // @@ TO DO - Only allow category deletion if the account is siteadmin
+    // only allow siteadmins to delete categories
+    const isSiteAdmin = user.siteAdmin;
+
+    // check if siteadmin
+    if (!isSiteAdmin) {
+      return res.status(401).json({ msg: 'Only Admins can delete categories' });
+    }
 
     await category.remove();
 
@@ -292,6 +297,7 @@ router.get('/user/:user_id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     const business = await Business.findById(req.params.id);
+    const user = await User.findById(req.user.id);
 
     // if business does not exist
     if (!business) {
@@ -300,7 +306,14 @@ router.delete('/:id', auth, async (req, res) => {
 
     // block delete if user does not own post or allow if siteadmin
     if (business.user.toString() !== req.user.id) {
-      // @@ TO DO - allow deletion if siteadmin
+      const isSiteAdmin = user.siteAdmin;
+
+      // check if siteadmin
+      if (isSiteAdmin) {
+        await business.remove();
+
+        res.json({ msg: 'Business removed by Site Admin' });
+      }
 
       return res
         .status(401)
