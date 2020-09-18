@@ -497,6 +497,7 @@ router.delete(
   async (req, res) => {
     try {
       const business = await Business.findById(req.params.id);
+      const user = await User.findById(req.user.id);
 
       // get review in business
       const review = business.reviews.find(
@@ -508,14 +509,11 @@ router.delete(
         return res.status(404).json({ msg: 'Review does not exist' });
       }
 
-      // @@ TO DO - Allow siteadmin to delete reviews
-      // @@ TO DO - ?Only allow siteadmins to delete?
+      const isSiteAdmin = user.siteAdmin;
 
-      // check user
-      if (review.user.toString() !== req.user.id) {
-        return res
-          .status(401)
-          .json({ msg: 'User not authorized to delete this review' });
+      // check if siteadmin
+      if (!isSiteAdmin) {
+        return res.status(401).json({ msg: 'Only Admins can delete reviews' });
       }
 
       // get the remove index
