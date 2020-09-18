@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-//const config = require('config');
-//const axios = require('axios');
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 const normalize = require('normalize-url');
@@ -9,6 +7,7 @@ const normalize = require('normalize-url');
 const Business = require('../../models/Business');
 const BusinessCategory = require('../../models/BusinessCategory');
 const User = require('../../models/User');
+const Review = require('../../models/Review');
 
 // @route   GET api/business/mine
 // @desc    Get current user's business
@@ -371,13 +370,172 @@ router.put('/unfavorite/:id', auth, async (req, res) => {
 // @route   POST api/business/review/:id
 // @desc    Review a business
 // @access  Private
+router.post(
+  '/review/:id',
+  [
+    auth,
+    [
+      check('stars', 'Please select a rating').not().isEmpty(),
+      check('text', 'Please leave a comment').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-// @route   POST api/business/review/:id/:review_id
-// @desc    Comment on a review
+    try {
+      const user = await User.findById(req.user.id).select('-password');
+      const business = await Business.findById(req.params.id);
+
+      // check if business has already been reviewed by this user
+      if (
+        business.reviews.filter(
+          (review) => review.user.toString() === req.user.id
+        ).length > 0
+      ) {
+        return res
+          .status(400)
+          .json({ msg: 'You have already reviewed this business' });
+      }
+
+      // for the review document
+      review = new Review({
+        user: req.user.id,
+        business: business._id,
+        stars: req.body.stars,
+        text: req.body.text,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        user: req.user.id,
+        businessReply: '',
+      });
+
+      await review.save();
+
+      const justCreatedReview = await Review.findOne({
+        user: req.user.id,
+        business: req.params.id,
+      });
+
+      // for the business document
+      const newReview = {
+        user: req.user.id,
+        review: justCreatedReview._id,
+      };
+
+      business.reviews.unshift(newReview);
+
+      await business.save();
+
+      res.json(business.reviews);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   POST api/business/review/reply/:id
+// @desc    Reply to a review
 // @access  Private
+router.post(
+  '/review/reply/:id',
+  [auth, [check('businessReply', 'Text is required').not().isEmpty()]],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // @@ TO DO - Make sure only the user that owns the business can reply to reviews
+
+    try {
+      const review = await Review.findById(req.params.id);
+
+      const reply = req.body.businessReply;
+
+      review.businessReply = reply;
+
+      await review.save();
+
+      res.json(review);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   PUT api/business/review/reply/remove/:id
+// @desc    Remove a reply to a review
+// @access  Private
+router.put('/review/reply/remove/:id', auth, async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.id);
+
+    // @@ TO DO - Make sure only users that own the business and siteadmins can delete replies
+
+    review.businessReply = '';
+
+    await review.save();
+
+    res.json(review);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 // @route   DELETE api/business/review/:id/:review_id
 // @desc    Delete review
 // @access  Private
+router.delete(
+  '/review/:id/:business_review_id/:review_id',
+  auth,
+  async (req, res) => {
+    try {
+      const business = await Business.findById(req.params.id);
+
+      // get review in business
+      const review = business.reviews.find(
+        (review) => review.id === req.params.business_review_id
+      );
+
+      // make sure review exists in business
+      if (!review) {
+        return res.status(404).json({ msg: 'Review does not exist' });
+      }
+
+      // @@ TO DO - Allow siteadmin to delete reviews
+      // @@ TO DO - ?Only allow siteadmins to delete?
+
+      // check user
+      if (review.user.toString() !== req.user.id) {
+        return res
+          .status(401)
+          .json({ msg: 'User not authorized to delete this review' });
+      }
+
+      // get the remove index
+      const removeIndex = business.reviews
+        .map((review) => review.user.toString())
+        .indexOf(req.user.id);
+
+      business.reviews.splice(removeIndex, 1);
+
+      await business.save();
+
+      // remove the review document
+      await Review.findOneAndRemove({ _id: req.params.review_id });
+
+      res.json(business.reviews);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
 
 module.exports = router;

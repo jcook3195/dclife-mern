@@ -74,28 +74,8 @@ const BusinessSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'users',
       },
-      stars: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true,
-      },
-      text: {
-        type: String,
-        required: true,
-      },
-      name: {
-        type: String,
-      },
-      profilePicture: {
-        type: String,
-      },
-      businessReply: {
-        type: String,
-      },
-      date: {
-        type: Date,
-        default: Date.now,
+      review: {
+        type: Schema.Types.ObjectId,
       },
     },
   ],
