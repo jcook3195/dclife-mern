@@ -472,10 +472,15 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // @@ TO DO - Make sure only the user that owns the business can reply to reviews
-
     try {
       const review = await Review.findById(req.params.id);
+      const business = await Business.findById(review.business);
+
+      if (business.user.toString() !== req.user.id) {
+        return res
+          .status(401)
+          .json({ msg: 'User is not authorized to reply to this review' });
+      }
 
       const reply = req.body.businessReply;
 
@@ -497,8 +502,26 @@ router.post(
 router.put('/review/reply/remove/:id', auth, async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
+    const business = await Business.findById(review.business);
+    const user = await User.findById(req.user.id);
 
-    // @@ TO DO - Make sure only users that own the business and siteadmins can delete replies
+    // only allow business owners or siteadmins to delete a reply to a review
+    if (business.user.toString() !== req.user.id) {
+      const isSiteAdmin = user.siteAdmin;
+
+      // if site admin
+      if (isSiteAdmin) {
+        review.businessReply = '';
+
+        await review.save();
+
+        res.json({ msg: 'Review reply removed by Site Admin' });
+      }
+
+      return res
+        .status(401)
+        .json({ msg: 'User is not authorized to delete this reply' });
+    }
 
     review.businessReply = '';
 
