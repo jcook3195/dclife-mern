@@ -1,7 +1,11 @@
 $(document).ready(function () {
   // init sidenav
   if ($('.sidenav').length) {
-    $('.sidenav').sidenav();
+    $('.sidenav')
+      .sidenav()
+      .on('click tap', 'li a', () => {
+        $('.sidenav').sidenav('close');
+      });
   }
 
   // init select dropdown

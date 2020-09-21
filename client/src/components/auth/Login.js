@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { login } from '../../store/actions/auth';
 
-import Button from '../ui/buttons/Button';
+import InputSubmit from '../ui/buttons/InputSubmit';
 
 const Login = ({ login, isAuthenticated }) => {
   const [formData, setFormData] = useState({
@@ -23,9 +23,8 @@ const Login = ({ login, isAuthenticated }) => {
     login(email, password);
   };
 
-  // @@ TO DO - redirect if logged in
   if (isAuthenticated) {
-    console.log('you already logged in');
+    return <Redirect to='/landing' />;
   }
 
   return (
@@ -48,7 +47,7 @@ const Login = ({ login, isAuthenticated }) => {
                 onChange={(e) => onChange(e)}
                 required
               />
-              <label for='email'>Email</label>
+              <label htmlFor='email'>Email</label>
             </div>
           </div>
           <div className='row mb-0'>
@@ -62,7 +61,7 @@ const Login = ({ login, isAuthenticated }) => {
                 onChange={(e) => onChange(e)}
                 required
               />
-              <label for='password'>Password</label>
+              <label htmlFor='password'>Password</label>
             </div>
           </div>
           <div className='row'>
@@ -76,8 +75,8 @@ const Login = ({ login, isAuthenticated }) => {
           </div>
           <div className='row'>
             <div className='col s6'>
-              <Button
-                classes='waves-effect waves-light btn red darken-1'
+              <InputSubmit
+                classes='waves-effect waves-light btn red darken-1 white-text'
                 text='Login'
               />
             </div>
