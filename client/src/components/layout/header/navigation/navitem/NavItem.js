@@ -10,7 +10,7 @@ const swapNavSubType = (subtype, url, iconClasses, text) => {
     case 'standard':
       return <StandardNavItem />;
     case 'profile':
-      return <ProfileNavItem />;
+      return <ProfileNavItem url={url} text={text} />;
     case 'icon':
       return <IconNavItem url={url} iconClasses={iconClasses} text={text} />;
     default:

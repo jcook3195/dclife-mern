@@ -10,7 +10,7 @@ import NavItem from '../navitem/NavItem';
 const SideDrawer = ({ auth: { isAuthenticated, loading }, logout }) => {
   const authLinks = (
     <Fragment>
-      <NavItem subtype='profile' />
+      <NavItem subtype='profile' url='/profile' text='Jordan Cook' />
       <NavItem
         subtype='icon'
         url='/businesses'
