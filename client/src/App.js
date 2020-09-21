@@ -5,6 +5,8 @@ import store from './store';
 import { loadUser } from './store/actions/auth';
 import setAuthToken from './utils/setAuthToken';
 
+import Layout from './components/layout/Layout';
+
 import './App.css';
 
 if (localStorage.token) {
@@ -20,7 +22,9 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <Fragment>
-          <h1>App</h1>
+          <Layout>
+            <p>Layout child props</p>
+          </Layout>
         </Fragment>
       </Router>
     </Provider>
