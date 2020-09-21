@@ -6,7 +6,7 @@ import dcLifeLogo from '../../../../../assets/images/logo.png';
 const NavLogo = () => {
   return (
     <Link to='/' className='brand-logo grey-text text-darken-2'>
-      <img src={dcLifeLogo} />
+      <img src={dcLifeLogo} alt='Dodge County Life Logo' />
     </Link>
   );
 };

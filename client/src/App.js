@@ -6,6 +6,8 @@ import { loadUser } from './store/actions/auth';
 import setAuthToken from './utils/setAuthToken';
 
 import Layout from './components/layout/Layout';
+import Landing from './components/general/Landing';
+import Routes from './components/routing/Routes';
 
 import './App.css';
 
@@ -23,7 +25,8 @@ const App = () => {
       <Router>
         <Fragment>
           <Layout>
-            <p>Layout child props</p>
+            <Route exact path='/' component={Landing} />
+            <Route component={Routes} />
           </Layout>
         </Fragment>
       </Router>

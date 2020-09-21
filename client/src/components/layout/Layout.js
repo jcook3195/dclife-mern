@@ -7,7 +7,9 @@ const Layout = (props) => {
   return (
     <Fragment>
       <Header />
-      {props.children}
+      <section id='main'>
+        <div className='container'>{props.children}</div>
+      </section>
       <Footer />
     </Fragment>
   );
