@@ -1,5 +1,7 @@
 import axios from 'axios';
 import {
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
   USER_LOADED,
   AUTH_ERROR,
   LOGIN_SUCCESS,
@@ -25,6 +27,43 @@ export const loadUser = () => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: AUTH_ERROR,
+    });
+  }
+};
+
+// register user
+export const register = ({
+  fname,
+  lname,
+  email,
+  phoneNumber,
+  password,
+}) => async (dispatch) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const body = JSON.stringify({ fname, lname, email, phoneNumber, password });
+
+  try {
+    const res = await axios.post('/api/users', body, config);
+
+    dispatch({
+      type: REGISTER_SUCCESS,
+      payload: res.data,
+    });
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      // set error toasts instead of logging to console
+      errors.forEach((error) => console.log(error.msg));
+    }
+
+    dispatch({
+      type: REGISTER_FAIL,
     });
   }
 };

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -7,10 +7,18 @@ import { logout } from '../../../../../store/actions/auth';
 
 import NavItem from '../navitem/NavItem';
 
-const SideDrawer = ({ auth: { isAuthenticated, loading }, logout }) => {
+const SideDrawer = ({
+  auth: { isAuthenticated, loading },
+  user: { firstName, lastName },
+  logout,
+}) => {
   const authLinks = (
     <Fragment>
-      <NavItem subtype='profile' url='/profile' text='Jordan Cook' />
+      <NavItem
+        subtype='profile'
+        url='/profile'
+        text={firstName + ' ' + lastName}
+      />
       <NavItem
         subtype='icon'
         url='/businesses'
@@ -72,10 +80,12 @@ const SideDrawer = ({ auth: { isAuthenticated, loading }, logout }) => {
 SideDrawer.propTypes = {
   logout: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  user: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  user: state.auth.user,
 });
 
 export default connect(mapStateToProps, { logout })(SideDrawer);
