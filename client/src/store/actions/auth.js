@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { setAlert } from './alert';
 import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
@@ -33,8 +34,8 @@ export const loadUser = () => async (dispatch) => {
 
 // register user
 export const register = ({
-  fname,
-  lname,
+  firstName,
+  lastName,
   email,
   phoneNumber,
   password,
@@ -45,7 +46,13 @@ export const register = ({
     },
   };
 
-  const body = JSON.stringify({ fname, lname, email, phoneNumber, password });
+  const body = JSON.stringify({
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    password,
+  });
 
   try {
     const res = await axios.post('/api/users', body, config);
@@ -58,8 +65,7 @@ export const register = ({
     const errors = err.response.data.errors;
 
     if (errors) {
-      // set error toasts instead of logging to console
-      errors.forEach((error) => console.log(error.msg));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
@@ -91,8 +97,7 @@ export const login = (email, password) => async (dispatch) => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      // set error toasts instead of logging to console
-      errors.forEach((error) => console.log(error.msg));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({

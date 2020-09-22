@@ -11,6 +11,6 @@ export const LOGOUT = 'LOGOUT';
 export const USER_LOADED = 'USER_LOADED';
 export const AUTH_ERROR = 'AUTH_ERROR';
 
-// toasts
-export const SET_TOAST = 'SET_TOAST';
-export const REMOVE_TOAST = 'REMOVE_TOAST';
+// alerts
+export const SET_ALERT = 'SET_ALERT';
+export const REMOVE_ALERT = 'REMOVE_ALERT';
