@@ -345,3 +345,7 @@ nav a.brand-logo img {
   color: #fff !important;
   background-color: #e53935 !important;
 }
+
+.white-text input {
+  color: #fff !important;
+}

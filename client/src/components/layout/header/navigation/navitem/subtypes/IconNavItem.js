@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const IconNavItem = ({ url, iconClasses, text }) => {
+const IconNavItem = ({ url, iconClasses, linkClasses, text }) => {
   return (
-    <Link to={url}>
+    <Link to={url} className={linkClasses}>
       <i className={iconClasses}></i>
       {text}
     </Link>
@@ -14,6 +14,7 @@ const IconNavItem = ({ url, iconClasses, text }) => {
 IconNavItem.propTypes = {
   url: PropTypes.string.isRequired,
   iconClasses: PropTypes.string.isRequired,
+  linkClasses: PropTypes.string,
   text: PropTypes.string.isRequired,
 };
 
