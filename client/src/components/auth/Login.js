@@ -28,68 +28,73 @@ const Login = ({ login, isAuthenticated }) => {
   }
 
   return (
-    <div className='form-container'>
-      <div className='row'>
-        <form className='col s12' onSubmit={(e) => onSubmit(e)}>
-          <div className='row'>
-            <div className='col s12'>
-              <h2 className='center-align section-header'>Login</h2>
+    <div className='container'>
+      <div className='form-container'>
+        <div className='row'>
+          <form className='col s12' onSubmit={(e) => onSubmit(e)}>
+            <div className='row'>
+              <div className='col s12'>
+                <h2 className='center-align section-header'>Login</h2>
+              </div>
             </div>
-          </div>
-          <div className='row'>
-            <div className='input-field col s12'>
-              <input
-                id='email'
-                type='email'
-                className='validate'
-                name='email'
-                value={email}
-                onChange={(e) => onChange(e)}
-                required
-              />
-              <label htmlFor='email'>Email</label>
+            <div className='row'>
+              <div className='input-field col s12'>
+                <input
+                  id='email'
+                  type='email'
+                  className='validate'
+                  name='email'
+                  value={email}
+                  onChange={(e) => onChange(e)}
+                  required
+                />
+                <label htmlFor='email'>Email</label>
+              </div>
             </div>
-          </div>
-          <div className='row mb-0'>
-            <div className='input-field col s12'>
-              <input
-                id='password'
-                type='password'
-                className='validate'
-                name='password'
-                value={password}
-                onChange={(e) => onChange(e)}
-                required
-              />
-              <label htmlFor='password'>Password</label>
+            <div className='row mb-0'>
+              <div className='input-field col s12'>
+                <input
+                  id='password'
+                  type='password'
+                  className='validate'
+                  name='password'
+                  value={password}
+                  onChange={(e) => onChange(e)}
+                  required
+                />
+                <label htmlFor='password'>Password</label>
+              </div>
             </div>
-          </div>
-          <div className='row'>
-            <div className='col s12'>
-              <p className='mt-0 mb-0'>
-                <Link to='/forgot-password' className='red-text text-darken-2'>
-                  Forgot Password
-                </Link>
-              </p>
+            <div className='row'>
+              <div className='col s12'>
+                <p className='mt-0 mb-0'>
+                  <Link
+                    to='/forgot-password'
+                    className='red-text text-darken-2'
+                  >
+                    Forgot Password
+                  </Link>
+                </p>
+              </div>
             </div>
-          </div>
-          <div className='row'>
-            <div className='col s6'>
-              <InputSubmit
-                classes='waves-effect waves-light btn red darken-1 white-text'
-                text='Login'
-              />
+            <div className='row'>
+              <div className='col s6'>
+                <InputSubmit
+                  classes='waves-effect waves-light btn red darken-1 white-text'
+                  text='Login'
+                />
+              </div>
+              <div className='col s6'>
+                <p className='mt-0'>
+                  Don't have an account?{' '}
+                  <Link to='/register' className='red-text text-darken-2'>
+                    Create one here.
+                  </Link>
+                </p>
+              </div>
             </div>
-            <div className='col s6'>
-              <p className='mt-0'>
-                Don't have an account?{' '}
-                <Link to='/register' className='red-text text-darken-2'>
-                  Create one here.
-                </Link>
-              </p>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

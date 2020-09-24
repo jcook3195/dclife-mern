@@ -87,10 +87,15 @@ router.post(
       snapchat,
     } = req.body;
 
+    const businessCatById = await BusinessCategory.findOne({
+      subcategory: businessCategory,
+    });
+
     const businessFields = {
       user: req.user.id,
       businessName,
       businessCategory,
+      businessCategoryName: businessCatById,
       businessMainImage,
       about,
       contactEmail,
@@ -347,6 +352,8 @@ router.put('/favorite/:id', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Business already favorited' });
     }
 
+    // @@ TO DO - Save favorites to the users also
+
     business.favorites.unshift({ user: req.user.id });
 
     await business.save();
@@ -373,6 +380,8 @@ router.put('/unfavorite/:id', auth, async (req, res) => {
     ) {
       return res.status(400).json({ msg: 'Business is not favorited by user' });
     }
+
+    // @@ TO DO - Save favorites to the users also
 
     // get remove index
     const removeIndex = business.favorites
